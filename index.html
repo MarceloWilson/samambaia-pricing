@@ -1,13 +1,150 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>samambaia-pricing</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precificação - Samambaia Festas</title>
+    <link href="Mascote_BoasVindas.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Cabeçalho -->
+        <header class="top-header">
+            <div class="mascote-topo" title="Coloque a imagem do mascote aqui no CSS">
+                <link rel="stylesheet" href="Mascote_Apontando.png">
+            </div>
+            <div class="header-titles">
+                <h1>Samambaia Festas</h1>
+                <p>Calculadora Exclusiva de Preços</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- COLUNA ESQUERDA: ENTRADAS -->
+            <div class="left-column">
+                <section class="panel input-panel">
+                    <div class="panel-header">
+                        <h2>📝 1. Dados Básicos</h2>
+                    </div>
+                    
+                    <div class="input-grid">
+                        <div class="input-group highlight-input full-width">
+                            <label for="valorTotal">💰 Valor Total (Mercadoria + Nota) *</label>
+                            <input type="text" id="valorTotal" placeholder="R$ 0,00" class="moeda input-gigante" required>
+                        </div>
+
+                        <div class="input-group highlight-input">
+                            <label for="quantidade">📦 Quantidade *</label>
+                            <input type="number" id="quantidade" placeholder="Ex: 100" min="1" class="input-gigante" required>
+                        </div>
+
+                        <div class="input-group highlight-input">
+                            <label for="categoria">📂 Categoria *</label>
+                            <select id="categoria" class="input-gigante">
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="acrilicos">Acrílicos</option>
+                                <option value="baloes">Balões</option>
+                                <option value="confeitaria">Confeitaria</option>
+                                <option value="descartaveis">Descartáveis</option>
+                                <option value="doces">Doces</option>
+                                <option value="fantasia">Fantasia</option>
+                                <option value="festas">Festas</option>
+                                <option value="papelaria">Papelaria</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="panel-header" style="margin-top: 40px;">
+                        <h2>⚖️ 2. Impostos e Frete (Opcional)</h2>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="frete">🚚 Frete (%)</label>
+                            <input type="number" id="frete" placeholder="0" min="0" step="0.01" class="input-gigante">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="ipi">🧾 IPI (%)</label>
+                            <input type="number" id="ipi" placeholder="0" min="0" step="0.01" class="input-gigante">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="st">🏷️ ST (%)</label>
+                            <input type="number" id="st" placeholder="0" min="0" step="0.01" class="input-gigante">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PAINEL ISOLADO DA ST -->
+                <section class="panel st-helper-panel">
+                    <h3>⚙️ Ajudante: Descobrir a % da ST</h3>
+                    <p>Tem o valor em Reais e não sabe a porcentagem? Digite aqui e o sistema preenche a calculadora acima automaticamente.</p>
+                    <div class="st-inputs">
+                        <div class="input-group">
+                            <label>Valor da ST (R$)</label>
+                            <input type="text" id="valorStNota" placeholder="R$ 0,00" class="moeda input-gigante">
+                        </div>
+                        <div class="input-group">
+                            <label>Valor dos Produtos (R$)</label>
+                            <input type="text" id="valorTotalNotaSt" placeholder="R$ 0,00" class="moeda input-gigante">
+                        </div>
+                    </div>
+                </section>
+
+                <button id="btnLimpar" class="btn-limpar">🗑️ Limpar Todos os Campos</button>
+            </div>
+
+            <!-- COLUNA DIREITA: RESULTADOS -->
+            <section class="panel result-panel">
+                <div class="panel-header">
+                    <h2>📊 3. Resultado Automático</h2>
+                </div>
+
+                <div class="resultados-grid">
+                    <div class="res-item">
+                        <span>Custo Base (Sem impostos)</span>
+                        <strong id="resValorUnitarioBase">R$ 0,00</strong>
+                    </div>
+                    <div class="res-item destaque-custo">
+                        <span>Custo Real da Peça (Com impostos)</span>
+                        <strong id="resCustoUnitarioFinal">R$ 0,00</strong>
+                    </div>
+                    <div class="res-item">
+                        <span>Markup (Acréscimo de Preço)</span>
+                        <strong><span id="resMarkupPct">0</span>%</strong>
+                    </div>
+                    <div class="res-item destaque-lucro">
+                        <span>Margem de Lucro Real (No Bolso)</span>
+                        <strong id="resMargemReal">0,00%</strong>
+                    </div>
+                </div>
+
+                <!-- DICA PARA O PAI -->
+                <div class="explicacao-markup">
+                    <strong>💡 Como ler sua Margem de Lucro:</strong><br>
+                    • O <strong>Markup</strong> é a porcentagem que você joga <em>em cima</em> do custo da peça para gerar o preço.<br>
+                    • A <strong>Margem Real</strong> é quanto desse dinheiro da venda realmente sobra como lucro puro para a loja após pagar o produto.
+                </div>
+
+                <!-- PREÇO DE VENDA -->
+                <div class="preco-venda-box">
+                    <div class="mascote-resultado" title="Mascote apontando/comemorando">
+                    <link href="Mascote_Calculadora.png">
+                    </div>
+                    <div class="preco-info">
+                        <span>PREÇO DE VENDA SUGERIDO:</span>
+                        <h1 id="resPrecoVendaSugerido">R$ 0,00</h1>
+                        <small>Ajustado automaticamente para ,99</small>
+                    </div>
+                </div>
+
+                <button id="btnCopiar" class="btn-copiar">📋 Copiar Resumo para o WhatsApp</button>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>
