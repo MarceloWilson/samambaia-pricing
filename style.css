@@ -417,62 +417,42 @@ button:active {
         font-size: 16px;
     }
 
-    /* ========================================= */
-/* NOVOS ESTILOS: PREÇO EDITÁVEL E MARGEM    */
+   /* ========================================= */
+/* PREÇO EDITÁVEL - ESTÉTICA DO SISTEMA      */
 /* ========================================= */
 
-/* Margem de Lucro Gigante */
-.destaque-lucro-gigante {
-    background-color: #137333;
-    color: white;
-    padding: 25px;
-    border-radius: var(--radius-md);
-    text-align: center;
-    margin-bottom: 25px;
-    box-shadow: 0 8px 20px rgba(19, 115, 51, 0.3);
-    transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-.destaque-lucro-gigante span {
-    display: block;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
-    color: #E6F4EA;
-}
-
-.destaque-lucro-gigante strong {
-    font-size: 45px;
-    font-weight: 700;
-}
-
-/* Preço Editável */
 .preco-input {
-    font-size: 45px;
+    font-size: 55px; /* Volta para o tamanho gigante original */
     font-weight: 700;
     color: var(--brand-dark);
-    background-color: #fff;
-    border: 3px dashed var(--brand-dark);
-    border-radius: 12px;
-    padding: 10px 15px;
+    background-color: transparent; /* Remove o fundo branco, mesclando com o amarelo */
+    border: none;
+    border-bottom: 3px dashed rgba(0, 0, 0, 0.2); /* Apenas uma linha sutil embaixo */
+    border-radius: 0;
+    padding: 0 0 5px 0;
     width: 100%;
     text-align: left;
-    margin: 8px 0;
-    box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+    margin: 5px 0;
+    box-shadow: none;
     cursor: text;
+    transition: all 0.2s;
+    font-family: 'Poppins', sans-serif;
 }
 
+/* O que acontece quando o seu pai clica no campo */
 .preco-input:focus {
     outline: none;
-    border-style: solid;
-    border-color: #137333;
-    background-color: #F0FFF4;
-    box-shadow: 0 0 0 4px rgba(19, 115, 51, 0.2);
+    background-color: rgba(255, 255, 255, 0.4); /* Fica levemente mais claro */
+    border-bottom: 3px solid var(--brand-dark); /* A linha fica forte */
+    border-radius: 8px 8px 0 0;
+    padding: 5px 10px;
 }
 
+/* Responsividade do celular */
 @media (max-width: 650px) {
-    .destaque-lucro-gigante strong { font-size: 38px; }
-    .preco-input { font-size: 35px; text-align: center; }
+    .preco-input {
+        font-size: 42px;
+        text-align: center;
+    }
 }
 }
