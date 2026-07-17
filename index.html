@@ -95,7 +95,7 @@
                 <button id="btnLimpar" class="btn-limpar">🗑️ Limpar Todos os Campos</button>
             </div>
 
-            <!-- COLUNA DIREITA: RESULTADOS -->
+          <!-- COLUNA DIREITA: RESULTADOS -->
             <section class="panel result-panel">
                 <div class="panel-header">
                     <h2>📊 3. Resultado Automático</h2>
@@ -114,29 +114,34 @@
                         <span>Markup (Acréscimo de Preço)</span>
                         <strong><span id="resMarkupPct">0</span>%</strong>
                     </div>
-                    <div class="res-item destaque-lucro">
-                        <span>Margem de Lucro Real (No Bolso)</span>
-                        <strong id="resMargemReal">0,00%</strong>
-                    </div>
                 </div>
 
                 <!-- DICA PARA O PAI -->
                 <div class="explicacao-markup">
                     <strong>💡 Como ler sua Margem de Lucro:</strong><br>
-                    • O <strong>Markup</strong> é a porcentagem que você joga <em>em cima</em> do custo da peça para gerar o preço.<br>
-                    • A <strong>Margem Real</strong> é quanto desse dinheiro da venda realmente sobra como lucro puro para a loja após pagar o produto.
+                    • O <strong>Markup</strong> é o que você joga <em>em cima</em> do custo.<br>
+                    • A <strong>Margem Real</strong> é o que sobra livre no caixa após a venda.
                 </div>
 
-                <!-- PREÇO DE VENDA -->
+                <!-- MARGEM DE LUCRO GIGANTE -->
+                <div class="destaque-lucro-gigante" id="caixaMargem">
+                    <span>💸 Margem de Lucro Real (No Bolso)</span>
+                    <strong id="resMargemReal">0,00%</strong>
+                </div>
+
+                <!-- PREÇO DE VENDA EDITÁVEL -->
                 <div class="preco-venda-box">
                     <!-- Mascote 2 -->
                     <div class="mascote-resultado"></div>
                     <div class="preco-info">
-                        <span>PREÇO DE VENDA SUGERIDO:</span>
-                        <h1 id="resPrecoVendaSugerido">R$ 0,00</h1>
-                        <small>Ajustado automaticamente para ,99</small>
+                        <span>PREÇO DE VENDA (EDITÁVEL ✏️):</span>
+                        <input type="text" id="precoVendaSugerido" class="moeda preco-input" value="R$ 0,00">
+                        <small>Altere o preço acima para ver a margem de lucro mudar!</small>
                     </div>
                 </div>
+
+                <button id="btnCopiar" class="btn-copiar">📋 Copiar Resumo para o WhatsApp</button>
+            </section>
 
                 <button id="btnCopiar" class="btn-copiar">📋 Copiar Resumo para o WhatsApp</button>
             </section>

@@ -13,26 +13,29 @@ const markupCategorias = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Máscaras de Moeda
     const camposMoeda = document.querySelectorAll('.moeda');
     camposMoeda.forEach(campo => {
         campo.addEventListener('input', (e) => {
             formatarInputMoeda(e.target);
-            atualizarTela();
+            
+            // Se o campo alterado for o Preço de Venda, recalcula apenas a margem.
+            // Caso contrário, atualiza a tela inteira.
+            if(e.target.id === 'precoVendaSugerido') {
+                recalcularMargemManual();
+            } else {
+                atualizarTela();
+            }
         });
     });
 
-    // Atualização em Tempo Real
     const inputsParaCalcular = ['quantidade', 'frete', 'ipi', 'st', 'categoria'];
     inputsParaCalcular.forEach(id => {
         document.getElementById(id).addEventListener('input', atualizarTela);
     });
 
-    // Botões
     document.getElementById('btnLimpar').addEventListener('click', limparCampos);
     document.getElementById('btnCopiar').addEventListener('click', copiarResultado);
 
-    // Helper da ST
     document.getElementById('valorStNota').addEventListener('input', calcularHelperST);
     document.getElementById('valorTotalNotaSt').addEventListener('input', calcularHelperST);
 });
@@ -66,7 +69,6 @@ function formatarPercentual(valor) {
     return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
 }
 
-// LÓGICAS DA MATEMÁTICA
 function aplicarPrecoPsicologico(preco) {
     if (preco <= 0) return 0;
     const inteiro = Math.floor(preco);
@@ -78,7 +80,8 @@ function calcularHelperST() {
     const valorTotalMercadoria = parseMoeda(document.getElementById('valorTotalNotaSt').value);
 
     if (valorTotalMercadoria > 0 && valorStNota >= 0) {
-        const percentualCalculado = (valorStNota / valorTotalMercadoria) * 100;
+        // Arredondamento padrão para maior ou menor no percentual da ST
+        const percentualCalculado = Math.round((valorStNota / valorTotalMercadoria) * 100);
         document.getElementById('st').value = percentualCalculado.toFixed(2);
         atualizarTela();
     }
@@ -98,28 +101,51 @@ function atualizarTela() {
         return;
     }
 
-    // Rateios e Custo
     const valorUnitarioBase = valorTotal / quantidade;
     const valorFrete = (valorTotal * (fretePct / 100)) / quantidade;
     const valorIPI = (valorTotal * (ipiPct / 100)) / quantidade;
-    const valorST = (valorTotal * (stPct / 100)) / quantidade;
+    
+    // Regra de arredondamento da ST para o centavo maior ou menor
+    let valorST = (valorTotal * (stPct / 100)) / quantidade;
+    valorST = Math.round(valorST * 100) / 100; 
     
     const custoUnitario = valorUnitarioBase + valorFrete + valorIPI + valorST;
     
-    // Markup e Preço Final
     const markup = markupCategorias[categoria] || 0;
     const precoCalculado = custoUnitario * (1 + (markup / 100));
     const precoVendaSugerido = aplicarPrecoPsicologico(precoCalculado);
 
-    // Calcula Margem de Lucro Real ((Preço de Venda - Custo) / Preço de Venda) * 100
-    const margemRealPct = ((precoVendaSugerido - custoUnitario) / precoVendaSugerido) * 100;
-
-    // Atualiza HTML
     document.getElementById('resValorUnitarioBase').innerText = formatarReal(valorUnitarioBase);
     document.getElementById('resCustoUnitarioFinal').innerText = formatarReal(custoUnitario);
     document.getElementById('resMarkupPct').innerText = markup;
-    document.getElementById('resMargemReal').innerText = formatarPercentual(margemRealPct);
-    document.getElementById('resPrecoVendaSugerido').innerText = formatarReal(precoVendaSugerido);
+    
+    // Atualiza o input editável e dispara o recalculo da margem
+    document.getElementById('precoVendaSugerido').value = formatarReal(precoVendaSugerido);
+    recalcularMargemManual();
+}
+
+// NOVA FUNÇÃO: Recalcula a Margem baseada no preço que o pai digitar
+function recalcularMargemManual() {
+    const custoUnitario = parseMoeda(document.getElementById('resCustoUnitarioFinal').innerText);
+    const precoEditado = parseMoeda(document.getElementById('precoVendaSugerido').value);
+    const caixaMargem = document.getElementById('caixaMargem');
+    
+    if (precoEditado > 0 && custoUnitario > 0) {
+        const margemRealPct = ((precoEditado - custoUnitario) / precoEditado) * 100;
+        document.getElementById('resMargemReal').innerText = formatarPercentual(margemRealPct);
+        
+        // Alerta visual de Prejuízo (Fica vermelho se a margem for zero ou negativa)
+        if (margemRealPct <= 0) {
+            caixaMargem.style.backgroundColor = '#DC3545'; // Vermelho
+            caixaMargem.style.boxShadow = '0 8px 20px rgba(220, 53, 69, 0.3)';
+        } else {
+            caixaMargem.style.backgroundColor = '#137333'; // Verde
+            caixaMargem.style.boxShadow = '0 8px 20px rgba(19, 115, 51, 0.3)';
+        }
+    } else {
+        document.getElementById('resMargemReal').innerText = '0,00%';
+        caixaMargem.style.backgroundColor = '#137333';
+    }
 }
 
 function zerarResultados() {
@@ -127,7 +153,8 @@ function zerarResultados() {
     document.getElementById('resCustoUnitarioFinal').innerText = 'R$ 0,00';
     document.getElementById('resMarkupPct').innerText = '0';
     document.getElementById('resMargemReal').innerText = '0,00%';
-    document.getElementById('resPrecoVendaSugerido').innerText = 'R$ 0,00';
+    document.getElementById('precoVendaSugerido').value = 'R$ 0,00';
+    document.getElementById('caixaMargem').style.backgroundColor = '#137333';
 }
 
 function limparCampos() {
@@ -140,8 +167,9 @@ function limparCampos() {
 function copiarResultado() {
     const categoriaSelect = document.getElementById('categoria');
     const nomeCategoria = categoriaSelect.options[categoriaSelect.selectedIndex]?.text || 'Não selecionada';
+    const precoVendaAtual = document.getElementById('precoVendaSugerido').value;
     
-    if (document.getElementById('resPrecoVendaSugerido').innerText === 'R$ 0,00') {
+    if (precoVendaAtual === 'R$ 0,00' || precoVendaAtual === '') {
         alert('Pai, preencha os dados primeiro para copiar os valores!');
         return;
     }
@@ -151,7 +179,7 @@ Categoria: ${nomeCategoria}
 Custo Final na Loja: ${document.getElementById('resCustoUnitarioFinal').innerText}
 Margem Real de Lucro: ${document.getElementById('resMargemReal').innerText}
 
-*PREÇO DE VENDA:* ${document.getElementById('resPrecoVendaSugerido').innerText}`;
+*PREÇO DE VENDA:* ${precoVendaAtual}`;
 
     navigator.clipboard.writeText(texto).then(() => {
         const btn = document.getElementById('btnCopiar');
